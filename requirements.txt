@@ -1,0 +1,22 @@
+# Chalmers Course Graph - Python-beroenden
+# Webbramverk
+streamlit>=1.28.0
+# Datahantering
+pandas>=2.0.0
+# Databas
+neo4j>=5.0.0
+# Visualisering
+pyvis>=0.3.0
+matplotlib>=3.7.0
+networkx>=3.0
+plotly>=5.0.0
+# AI/LLM
+litellm>=1.0.0
+# HTTP och API
+requests>=2.31.0
+# HTML-parsing
+beautifulsoup4>=4.12.0
+# Miljövariabler
+python-dotenv>=1.0.0
+# PDF-hantering
+pypdf2>=3.0.0
