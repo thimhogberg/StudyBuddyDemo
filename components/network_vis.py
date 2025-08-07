@@ -198,8 +198,18 @@ class NetworkVisualizer:
             # Lägg till callback-skriptet före </body>
             html_content = html_content.replace("</body>", callback_script + "</body>")
             
-            # Visa i Streamlit
-            components.html(html_content, height=int(height.replace("px", "")) + 50)
+            # Visa i Streamlit med explicit bredd för Streamlit Cloud
+            # Streamlit Cloud kan ha annorlunda viewport-hantering
+            st.markdown("""
+            <style>
+            iframe[title="components.html"] {
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+            </style>
+            """, unsafe_allow_html=True)
+            
+            components.html(html_content, height=int(height.replace("px", "")) + 50, width=None)
             
             # Rensa temporär fil
             os.unlink(tmp.name)

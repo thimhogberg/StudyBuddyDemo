@@ -198,7 +198,7 @@ class Neo4jService:
             JSON-sträng med noder och relationer
         """
         try:
-            with self.driver.session() as session:
+            with self.driver.session(database="neo4j") as session:
                 # Hämta alla noder
                 nodes_query = """
                 MATCH (n)
@@ -234,16 +234,34 @@ class Neo4jService:
                 """
                 rels_result = session.run(rels_query).single()
                 
+            # Konvertera datetime till sträng
+            def convert_datetime(obj):
+                """Konvertera Neo4j datetime till sträng"""
+                if hasattr(obj, 'isoformat'):
+                    return obj.isoformat()
+                elif isinstance(obj, dict):
+                    return {k: convert_datetime(v) for k, v in obj.items()}
+                elif isinstance(obj, list):
+                    return [convert_datetime(item) for item in obj]
+                return obj
+            
             graph_json = {
-                "nodes": nodes_result["nodes"] if nodes_result else [],
-                "relationships": rels_result["relationships"] if rels_result else []
+                "nodes": convert_datetime(nodes_result["nodes"] if nodes_result else []),
+                "relationships": convert_datetime(rels_result["relationships"] if rels_result else [])
             }
             
-            return json.dumps(graph_json, indent=2, ensure_ascii=False)
+            return json.dumps(graph_json, indent=2, ensure_ascii=False, default=str)
         
-        except Exception:
-            # Om något går fel, returnera en tom graf
-            return json.dumps({"nodes": [], "relationships": []}, indent=2, ensure_ascii=False)
+        except Exception as e:
+            # Om något går fel, returnera en tom graf med felmeddelande
+            import traceback
+            error_graph = {
+                "nodes": [],
+                "relationships": [],
+                "error": f"Fel vid hämtning av graf: {str(e)}",
+                "traceback": traceback.format_exc()
+            }
+            return json.dumps(error_graph, indent=2, ensure_ascii=False)
 
     def run_cypher_query(self, query: str, parameters: Optional[Dict] = None) -> List[Dict]:
         """

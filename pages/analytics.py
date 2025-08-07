@@ -418,6 +418,11 @@ def render_ai_insights():
                 # Hämta hela grafen
                 graph_json = st.session_state.neo4j_service.get_existing_graph_as_json()
                 
+                # Debug: Visa vad som hämtas
+                with st.expander("Debug: Graf-data"):
+                    st.text(f"Graf-data längd: {len(graph_json)} tecken")
+                    st.text(f"Första 500 tecken: {graph_json[:500]}")
+                
                 # Bygg prompt
                 prompt = f"""
 Analysera följande kunskapsgraf från ett utbildningsprogram på Chalmers.
